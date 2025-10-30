@@ -1,6 +1,20 @@
 {
   "app": {
-    "signingConfigs": [],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "/Users/gemini/.ohos/config/default_QRCode_v8yF8dZQNOXCL77FI9KSOzSCfQdezLJCEzdYE1whce0=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B185C240464E9333D8FB0A34A82969749AC8CF639570625119E27EE37DA38409E352D6909B2F9B4",
+          "profile": "/Users/gemini/.ohos/config/default_QRCode_v8yF8dZQNOXCL77FI9KSOzSCfQdezLJCEzdYE1whce0=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "/Users/gemini/.ohos/config/default_QRCode_v8yF8dZQNOXCL77FI9KSOzSCfQdezLJCEzdYE1whce0=.p12",
+          "storePassword": "0000001B148292EA82965C422B687585C1EC35AE30B7F9EEDBA823C337CD24E757C3124EAEDC3C11B9F84C"
+        }
+      }
+    ],
     "products": [
       {
         "name": "default",

@@ -1,31 +1,42 @@
 import { authentication } from '@kit.AccountKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import router from '@ohos.router';
 
 const DOMAIN = 0x0000;
 
 @Entry
 @Component
 struct Index {
-  @State message: string = 'Hello World';
+  @State message: string = 'QR Code Scanner';
 
   build() {
-    RelativeContainer() {
+    Column() {
       Text(this.message)
-        .id('HelloWorld')
-        .fontSize($r('app.float.page_text_font_size'))
+        .fontSize(32)
         .fontWeight(FontWeight.Bold)
-        .alignRules({
-          center: { anchor: '__container__', align: VerticalAlign.Center },
-          middle: { anchor: '__container__', align: HorizontalAlign.Center }
-        })
-        .onClick(() => {
-          this.message = 'Welcome';
-        })
+        .fontColor('#1D1B20')
+        .margin({ bottom: 40 })
 
+      Button('打开内容中心')
+        .fontSize(18)
+        .fontWeight(FontWeight.Medium)
+        .backgroundColor('#6750A4')
+        .fontColor('#FFFFFF')
+        .width(200)
+        .height(50)
+        .borderRadius(25)
+        .onClick(() => {
+          router.pushUrl({
+            url: 'pages/ContentPage'
+          })
+        })
     }
-    .height('100%')
     .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+    .alignItems(HorizontalAlign.Center)
+    .backgroundColor('#FEF7FF')
   }
 
   aboutToAppear() {
