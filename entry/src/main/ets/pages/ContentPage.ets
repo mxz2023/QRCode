@@ -1,359 +1,352 @@
-// 定义内容项接口
-interface ContentItem {
-  title: string;
-  time: string;
-}
+/**
+ * Copyright (c) 2023-2025 Mxz Co., Ltd.
+ *
+ * @file ContentPage.ets
+ * @project QRCode
+ * @author vincent_gemini
+ * @crateTime 2025-10-30
+ * @desc 二维码管理页面 - 基于Figma设计实现
+ */
 
-@Entry
+import { ColorConstants, FontSizeConstants, AppConstants } from "../common/CommonDefine";
+
 @Component
-struct ContentPage {
-  @State currentTab: number = 0;
-  @State selectedFilter: number = 1;
+export struct ContentPage {
+  @State selectedTab: number = 1
+  @State showCreatePanel: boolean = false
+  
+  // 示例二维码数据
+  private qrCodeList: Array<QRCodeItem> = [
+    { id: 1, name: "个人名片", description: "包含联系信息的二维码", category: 1 },
+    { id: 2, name: "WiFi连接", description: "快速连接WiFi网络", category: 1 },
+    { id: 3, name: "网址链接", description: "跳转到指定网页", category: 2 },
+    { id: 4, name: "文本信息", description: "存储重要文本内容", category: 2 },
+    { id: 5, name: "联系方式", description: "分享电话号码", category: 1 },
+    { id: 6, name: "地理位置", description: "分享位置信息", category: 3 },
+    { id: 7, name: "邮箱地址", description: "快速发送邮件", category: 3 },
+    { id: 8, name: "社交媒体", description: "关注社交媒体账号", category: 1 }
+  ]
+  
+  // 创建二维码选项
+  private createOptions: Array<CreateOption> = [
+    { id: 1, name: "文本二维码", description: "创建包含文本内容的二维码" },
+    { id: 2, name: "网址二维码", description: "创建跳转到网页的二维码" },
+    { id: 3, name: "名片二维码", description: "创建个人名片二维码" },
+    { id: 4, name: "WiFi二维码", description: "创建WiFi连接二维码" },
+    { id: 5, name: "位置二维码", description: "创建地理位置二维码" }
+  ]
 
-  // 模拟数据
-  private contentItems: ContentItem[] = [
-    { title: "设计灵感", time: "今天更新" },
-    { title: "开发技巧", time: "昨天更新" },
-    { title: "最佳实践", time: "2天前更新" },
-    { title: "UI组件", time: "今天更新" },
-    { title: "性能优化", time: "昨天更新" },
-    { title: "安全指南", time: "2天前更新" },
-    { title: "测试方法", time: "今天更新" },
-    { title: "部署策略", time: "昨天更新" },
-    { title: "监控工具", time: "2天前更新" },
-    { title: "文档规范", time: "今天更新" },
-    { title: "团队协作", time: "昨天更新" },
-    { title: "版本管理", time: "2天前更新" }
-  ];
+  private handleTabSelect(index: number): void {
+    this.selectedTab = index
+  }
 
-  // 过滤器标签
-  private filterLabels: string[] = ["全部", "设计", "开发", "测试", "部署", "文档", "团队", "工具", "安全", "性能"];
+  private toggleCreatePanel(): void {
+    this.showCreatePanel = !this.showCreatePanel
+  }
+
+  private getFilteredQRCodeList(): Array<QRCodeItem> {
+    if (this.selectedTab === 0) {
+      return this.qrCodeList // 全部
+    }
+    return this.qrCodeList.filter(item => item.category === this.selectedTab)
+  }
 
   build() {
-    Column() {
-      // 状态栏
-      this.StatusBar()
-      
-      // 标题栏
-      this.TitleBar()
-      
-      // 过滤器标签栏
-      this.FilterBar()
-      
-      // 操作按钮区域
-      this.ActionButtons()
-      
-      // 内容网格
-      this.ContentGrid()
-      
-      // 底部导航栏
-      this.BottomNavigation()
-      
-      // 底部指示器
-      this.BottomIndicator()
+    Stack() {
+      // 主内容区域
+      Column() {
+        // 标签栏区域
+        this.buildTabBar()
+
+        // 二维码网格区域
+        this.buildQRCodeGrid()
+      }
+      .width('100%')
+      .height('100%')
+      .backgroundColor(ColorConstants.View_Background_Color)
+
+      // 创建二维码浮层
+      if (this.showCreatePanel) {
+        this.buildCreatePanel()
+      }
+
+      // 悬浮创建按钮
+      this.buildFloatingButton()
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#FEF7FF')
   }
 
-  // 状态栏组件
-  @Builder StatusBar() {
-    Row() {
-      Text('9:30')
-        .fontSize(14)
-        .fontWeight(FontWeight.Medium)
-        .fontColor('#1D1B20')
-        .margin({ left: 24, top: 22 })
-      
-      Row() {
-        Text('📶')
-          .fontSize(14)
-        Text('📡')
-          .fontSize(14)
-          .margin({ left: 16 })
-        Text('🔋')
-          .fontSize(15)
-          .margin({ left: 22 })
-      }
-      .width(46)
-      .height(17)
-      .margin({ right: 24, top: 25 })
-      .justifyContent(FlexAlign.End)
-      
-      Text('📱')
-        .fontSize(16)
-        .margin({ top: 18 })
-        .align(Alignment.Center)
-    }
-    .width('100%')
-    .height(52)
-    .backgroundColor('#FEF7FF')
-  }
-
-  // 标题栏组件
-  @Builder TitleBar() {
-    Row() {
-      // 左侧头像按钮
-      Button({ type: ButtonType.Circle }) {
-        Text('👤')
-          .fontSize(24)
-      }
-      .width(48)
-      .height(48)
-      .backgroundColor('#FEF7FF')
-      .margin({ left: 4, top: 8 })
-
-      // 标题
-      Text('内容中心')
-        .fontSize(22)
-        .fontWeight(FontWeight.Normal)
-        .fontColor('#1D1B20')
-        .margin({ left: 12, top: 18 })
-        .layoutWeight(1)
-
-      // 右侧搜索按钮
-      Button({ type: ButtonType.Circle }) {
-        Text('🔍')
-          .fontSize(24)
-      }
-      .width(48)
-      .height(48)
-      .backgroundColor('#FEF7FF')
-      .margin({ right: 4, top: 8 })
-    }
-    .width('100%')
-    .height(64)
-    .backgroundColor('#FEF7FF')
-  }
-
-  // 过滤器标签栏
-  @Builder FilterBar() {
-    Scroll() {
-      Row() {
-        ForEach(this.filterLabels, (item: string, index: number) => {
-          Button(item) {
-            Text(item)
-              .fontSize(14)
+  @Builder
+  buildTabBar() {
+    Column() {
+      Scroll() {
+        Row({ space: 8 }) {
+          // 全部标签
+          Button() {
+            Text('全部')
+              .fontSize(FontSizeConstants.Small)
+              .fontColor(this.selectedTab === 0 ? ColorConstants.Text_333 : ColorConstants.Text_666)
               .fontWeight(FontWeight.Medium)
-              .fontColor(index === this.selectedFilter ? '#4A4459' : '#49454F')
           }
           .width(67)
           .height(32)
-          .backgroundColor(index === this.selectedFilter ? '#E8DEF8' : '#FEF7FF')
-          .border({
-            width: index === this.selectedFilter ? 0 : 1,
-            color: index === this.selectedFilter ? '#00000000' : '#CAC4D0',
-            style: BorderStyle.Solid
-          })
+          .backgroundColor(this.selectedTab === 0 ? ColorConstants.Primary_Color : ColorConstants.White)
           .borderRadius(8)
-          .margin({ right: 8 })
-          .onClick(() => {
-            this.selectedFilter = index;
+          .border({
+            width: this.selectedTab === 0 ? 0 : 1,
+            color: this.selectedTab === 0 ? Color.Transparent : ColorConstants.Line_Color
           })
-        })
+          .onClick(() => {
+            this.handleTabSelect(0)
+          })
+
+          // 分类标签
+          ForEach([1, 2, 3], (index: number) => {
+            Button() {
+              Row() {
+                if (index === 1) {
+                  Image($rawfile('5.svg'))
+                    .width(16)
+                    .height(16)
+                    .margin({ right: 8 })
+                }
+                
+                Text(this.getCategoryName(index))
+                  .fontSize(FontSizeConstants.Small)
+                  .fontColor(this.selectedTab === index ? ColorConstants.Text_333 : ColorConstants.Text_666)
+                  .fontWeight(FontWeight.Medium)
+              }
+              .justifyContent(FlexAlign.Center)
+            }
+            .width(index === 1 ? 85 : 67)
+            .height(32)
+            .backgroundColor(this.selectedTab === index ? ColorConstants.Primary_Color : ColorConstants.White)
+            .borderRadius(8)
+            .border({
+              width: this.selectedTab === index ? 0 : 1,
+              color: this.selectedTab === index ? Color.Transparent : ColorConstants.Line_Color
+            })
+            .onClick(() => {
+              this.handleTabSelect(index)
+            })
+          })
+        }
+        .padding({ left: 8, right: 8, top: 8, bottom: 8 })
       }
-      .padding({ left: 8, right: 8, top: 8, bottom: 8 })
+      .scrollable(ScrollDirection.Horizontal)
+      .width('100%')
     }
-    .scrollable(ScrollDirection.Horizontal)
     .width('100%')
     .height(48)
-    .backgroundColor('#FEF7FF')
+    .backgroundColor(ColorConstants.White)
   }
 
-  // 操作按钮区域
-  @Builder ActionButtons() {
-    Row() {
-      // 主要操作按钮
-      Button({ type: ButtonType.Normal }) {
-        Row() {
-          Text('➕')
-            .fontSize(20)
-          Text('新建内容')
-            .fontSize(14)
-            .fontWeight(FontWeight.Medium)
-            .fontColor('#6750A4')
-            .margin({ left: 8 })
-        }
-      }
-      .width(95)
-      .height(40)
-      .backgroundColor('#FEF7FF')
-      .border({
-        width: 1,
-        color: '#6750A4',
-        style: BorderStyle.Solid
-      })
-      .borderRadius(100)
+  @Builder
+  buildQRCodeGrid() {
+    Column() {
+      // 网格标题
+      Text('我的二维码')
+        .fontSize(FontSizeConstants.LargeTitle)
+        .fontColor(ColorConstants.Text_333)
+        .fontWeight(FontWeight.Bold)
+        .margin({ top: 24, bottom: 16, left: 16 })
 
-      Blank()
-        .layoutWeight(1)
-
-      // 设置按钮
-      Button({ type: ButtonType.Circle }) {
-        Text('⚙️')
-          .fontSize(24)
-      }
-      .width(40)
-      .height(40)
-      .backgroundColor('#FEF7FF')
-      .border({
-        width: 1,
-        color: '#CAC4D0',
-        style: BorderStyle.Solid
-      })
-      .borderRadius(100)
-    }
-    .width('100%')
-    .height(72)
-    .padding({ left: 8, right: 8 })
-    .backgroundColor('#FEF7FF')
-  }
-
-  // 内容网格
-  @Builder ContentGrid() {
-    Grid() {
-      ForEach(this.contentItems, (item: ContentItem, index: number) => {
-        GridItem() {
-          Column() {
-            // 图片区域
-            Column() {
-              Text('📷')
-                .fontSize(48)
-            }
-            .width('100%')
-            .height(120)
-            .justifyContent(FlexAlign.Center)
-            .alignItems(HorizontalAlign.Center)
-            .backgroundColor('#ECE6F0')
-            .borderRadius(16)
-            
-            // 文本区域
-            Column() {
-              Text(item.title)
-                .fontSize(14)
-                .fontWeight(FontWeight.Medium)
-                .fontColor('#1D1B20')
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-              
-              Text(item.time)
-                .fontSize(12)
-                .fontWeight(FontWeight.Normal)
-                .fontColor('#49454F')
-                .margin({ top: 4 })
-            }
-            .width('100%')
-            .margin({ top: 4 })
+      // 二维码网格
+      Grid() {
+        ForEach(this.getFilteredQRCodeList(), (item: QRCodeItem) => {
+          GridItem() {
+            this.buildQRCodeCard(item)
           }
-          .width('100%')
-          .padding(8)
-          .onClick(() => {
-            // 处理内容点击事件
-            console.log('点击内容:', item.title);
-          })
-        }
-      })
+        })
+      }
+      .columnsTemplate('1fr 1fr')
+      .rowsTemplate('1fr 1fr 1fr')
+      .columnsGap(12)
+      .rowsGap(12)
+      .padding({ left: 16, right: 16, bottom: 80 })
+      .layoutWeight(1)
     }
-    .columnsTemplate('1fr 1fr 1fr')
-    .columnsGap(8)
-    .rowsGap(16)
     .width('100%')
     .layoutWeight(1)
-    .padding({ left: 16, right: 16, top: 0, bottom: 16 })
-    .backgroundColor('#FEF7FF')
   }
 
-  // 底部导航栏
-  @Builder BottomNavigation() {
-    Row() {
-      // 首页标签
+  @Builder
+  buildQRCodeCard(item: QRCodeItem) {
+    Column() {
+      // 二维码图标区域
       Column() {
-        Button({ type: ButtonType.Circle }) {
-          Text('🏠')
-            .fontSize(24)
-            .fontColor(this.currentTab === 0 ? '#625B71' : '#49454F')
-        }
-        .width(56)
-        .height(32)
-        .backgroundColor(this.currentTab === 0 ? '#E8DEF8' : '#F3EDF7')
-        .borderRadius(16)
-        
-        Text('首页')
-          .fontSize(12)
-          .fontWeight(FontWeight.Medium)
-          .fontColor(this.currentTab === 0 ? '#625B71' : '#49454F')
-          .margin({ top: 6 })
+        // 这里可以放置二维码图标或预览图
+        Text('QR')
+          .fontSize(FontSizeConstants.NavTitle)
+          .fontColor(ColorConstants.Primary_Color)
+          .fontWeight(FontWeight.Bold)
       }
-      .width('33.33%')
-      .onClick(() => {
-        this.currentTab = 0;
-      })
+      .width(60)
+      .height(60)
+      .backgroundColor(ColorConstants.White)
+      .borderRadius(8)
+      .justifyContent(FlexAlign.Center)
+      .alignItems(HorizontalAlign.Center)
 
-      // 发现标签
-      Column() {
-        Button({ type: ButtonType.Circle }) {
-          Text('🔍')
-            .fontSize(24)
-            .fontColor(this.currentTab === 1 ? '#625B71' : '#49454F')
-        }
-        .width(56)
-        .height(32)
-        .backgroundColor(this.currentTab === 1 ? '#E8DEF8' : '#F3EDF7')
-        .borderRadius(16)
-        
-        Text('发现')
-          .fontSize(12)
-          .fontWeight(FontWeight.Medium)
-          .fontColor(this.currentTab === 1 ? '#625B71' : '#49454F')
-          .margin({ top: 6 })
-      }
-      .width('33.33%')
-      .onClick(() => {
-        this.currentTab = 1;
-      })
+      // 二维码信息
+      Text(item.name)
+        .fontSize(FontSizeConstants.Small)
+        .fontColor(ColorConstants.Text_333)
+        .fontWeight(FontWeight.Medium)
+        .margin({ top: 8 })
+        .maxLines(1)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
 
-      // 我的标签
-      Column() {
-        Button({ type: ButtonType.Circle }) {
-          Text('👤')
-            .fontSize(24)
-            .fontColor(this.currentTab === 2 ? '#625B71' : '#49454F')
-        }
-        .width(56)
-        .height(32)
-        .backgroundColor(this.currentTab === 2 ? '#E8DEF8' : '#F3EDF7')
-        .borderRadius(16)
-        
-        Text('我的')
-          .fontSize(12)
-          .fontWeight(FontWeight.Medium)
-          .fontColor(this.currentTab === 2 ? '#625B71' : '#49454F')
-          .margin({ top: 6 })
-      }
-      .width('33.33%')
-      .onClick(() => {
-        this.currentTab = 2;
-      })
+      Text(item.description)
+        .fontSize(FontSizeConstants.Small)
+        .fontColor(ColorConstants.Text_666)
+        .margin({ top: 4 })
+        .maxLines(2)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
     }
     .width('100%')
-    .height(64)
-    .backgroundColor('#F3EDF7')
+    .padding(12)
+    .backgroundColor(ColorConstants.White)
+    .borderRadius(12)
+    .shadow({
+      radius: 8,
+      color: ColorConstants.View_Mask,
+      offsetX: 2,
+      offsetY: 2
+    })
   }
 
-  // 底部指示器
-  @Builder BottomIndicator() {
-    Row() {
-      // 使用Div代替Rectangle
-      Divider()
-        .width(108)
-        .height(4)
-        .color('#1D1B20')
-        .lineCap(LineCapStyle.Round)
+  @Builder
+  buildCreatePanel() {
+    Column() {
+      // 浮层标题
+      Row() {
+        Text('创建二维码')
+          .fontSize(FontSizeConstants.Medium)
+          .fontColor(ColorConstants.Text_333)
+          .fontWeight(FontWeight.Bold)
+        
+        Blank()
+        
+        Button() {
+          Text('关闭')
+            .fontSize(FontSizeConstants.Small)
+            .fontColor(ColorConstants.Primary_Color)
+        }
+        .backgroundColor(Color.Transparent)
+        .onClick(() => {
+          this.toggleCreatePanel()
+        })
+      }
+      .width('100%')
+      .padding({ top: 16, left: 16, right: 16 })
+
+      // 创建选项列表
+      List({ space: 12 }) {
+        ForEach(this.createOptions, (option: CreateOption) => {
+          ListItem() {
+            this.buildCreateOption(option)
+          }
+        })
+      }
+      .padding({ top: 16, left: 16, right: 16, bottom: 16 })
+      .layoutWeight(1)
     }
     .width('100%')
-    .height(24)
-    .backgroundColor('#F3EDF7')
-    .justifyContent(FlexAlign.Center)
+    .height(300)
+    .backgroundColor(ColorConstants.White)
+    .borderRadius(16)
+    .shadow({
+      radius: 16,
+      color: ColorConstants.View_Mask,
+      offsetX: 0,
+      offsetY: -4
+    })
+    .position({
+      x: 0,
+      y: this.showCreatePanel ? '100% - 300' : '100%'
+    })
+    .animation({
+      duration: 300,
+      curve: Curve.EaseOut
+    })
   }
+
+  @Builder
+  buildCreateOption(option: CreateOption) {
+    Row() {
+      Column({ space: 4 }) {
+        Text(option.name)
+          .fontSize(FontSizeConstants.Medium)
+          .fontColor(ColorConstants.Text_333)
+          .fontWeight(FontWeight.Medium)
+        
+        Text(option.description)
+          .fontSize(FontSizeConstants.Small)
+          .fontColor(ColorConstants.Text_666)
+      }
+      .layoutWeight(1)
+      
+      Image($rawfile('5.svg'))
+        .width(20)
+        .height(20)
+    }
+    .width('100%')
+    .padding(16)
+    .backgroundColor(ColorConstants.View_Background_Color)
+    .borderRadius(8)
+    .onClick(() => {
+      // 处理创建二维码逻辑
+      console.log(`创建: ${option.name}`)
+    })
+  }
+
+  private getCategoryName(category: number): string {
+    switch (category) {
+      case 1: return '常用'
+      case 2: return '链接'
+      case 3: return '其他'
+      default: return '标签'
+    }
+  }
+
+  @Builder
+  buildFloatingButton() {
+    Button() {
+      Image($rawfile('5.svg'))
+        .width(24)
+        .height(24)
+    }
+    .width(56)
+    .height(56)
+    .backgroundColor(ColorConstants.Primary_Color)
+    .borderRadius(28)
+    .shadow({
+      radius: 8,
+      color: ColorConstants.View_Mask,
+      offsetX: 0,
+      offsetY: 4
+    })
+    .position({
+      x: '85%',
+      y: '85%'
+    })
+    .onClick(() => {
+      this.toggleCreatePanel()
+    })
+  }
+}
+
+interface QRCodeItem {
+  id: number
+  name: string
+  description: string
+  category: number
+}
+
+interface CreateOption {
+  id: number
+  name: string
+  description: string
 }

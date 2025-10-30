@@ -1,47 +1,31 @@
 import { authentication } from '@kit.AccountKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { hilog } from '@kit.PerformanceAnalysisKit';
-import router from '@ohos.router';
+import { CommonDefine } from '../common/CommonDefine';
+import { ContentPage } from './ContentPage';
 
-const DOMAIN = 0x0000;
+import { logger } from '../utils/Logger'
 
 @Entry
 @Component
 struct Index {
-  @State message: string = 'QR Code Scanner';
+  private pathStack: NavPathStack = new NavPathStack()
 
-  build() {
-    Column() {
-      Text(this.message)
-        .fontSize(32)
-        .fontWeight(FontWeight.Bold)
-        .fontColor('#1D1B20')
-        .margin({ bottom: 40 })
+  aboutToAppear(): void {
+    AppStorage.setOrCreate(CommonDefine.globalPathStackName, this.pathStack);
 
-      Button('打开内容中心')
-        .fontSize(18)
-        .fontWeight(FontWeight.Medium)
-        .backgroundColor('#6750A4')
-        .fontColor('#FFFFFF')
-        .width(200)
-        .height(50)
-        .borderRadius(25)
-        .onClick(() => {
-          router.pushUrl({
-            url: 'pages/ContentPage'
-          })
-        })
-    }
-    .width('100%')
-    .height('100%')
-    .justifyContent(FlexAlign.Center)
-    .alignItems(HorizontalAlign.Center)
-    .backgroundColor('#FEF7FF')
+    this.loginWithHuaweiID();
   }
 
-  aboutToAppear() {
-    hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
-    this.loginWithHuaweiID();
+  build() {
+    Navigation(this.pathStack) {
+      ContentPage()
+    }
+    .title($r('app.string.app_name'))
+    .titleMode(NavigationTitleMode.Mini)
+    .mode(NavigationMode.Stack)
+    .hideBackButton(true)
+    .width('100%')
+    .height('100%')
   }
 
   /**
@@ -65,7 +49,7 @@ struct Index {
       // Send authCode to the backend in exchange for unionID, session
 
     }).catch((error: BusinessError) => {
-      hilog.error(DOMAIN, 'testTag', 'error: %{public}s', JSON.stringify(error));
+      logger.error('testTag', 'error: %{public}s', JSON.stringify(error));
       if (error.code === authentication.AuthenticationErrorCode.ACCOUNT_NOT_LOGGED_IN) {
         // HUAWEI ID is not logged in, it is recommended to jump to the login guide page
 
