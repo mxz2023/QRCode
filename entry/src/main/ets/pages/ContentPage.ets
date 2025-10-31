@@ -105,13 +105,6 @@ export struct ContentPage {
           ForEach([1, 2, 3], (index: number) => {
             Button() {
               Row() {
-                if (index === 1) {
-                  Image($rawfile('5.svg'))
-                    .width(16)
-                    .height(16)
-                    .margin({ right: 8 })
-                }
-                
                 Text(this.getCategoryName(index))
                   .fontSize(FontSizeConstants.Small)
                   .fontColor(this.selectedTab === index ? ColorConstants.Text_333 : ColorConstants.Text_666)
@@ -132,6 +125,8 @@ export struct ContentPage {
             })
           })
         }
+        .width('100%')
+        .justifyContent(FlexAlign.Start)
         .padding({ left: 8, right: 8, top: 8, bottom: 8 })
       }
       .scrollable(ScrollDirection.Horizontal)
@@ -145,13 +140,6 @@ export struct ContentPage {
   @Builder
   buildQRCodeGrid() {
     Column() {
-      // 网格标题
-      Text('我的二维码')
-        .fontSize(FontSizeConstants.LargeTitle)
-        .fontColor(ColorConstants.Text_333)
-        .fontWeight(FontWeight.Bold)
-        .margin({ top: 24, bottom: 16, left: 16 })
-
       // 二维码网格
       Grid() {
         ForEach(this.getFilteredQRCodeList(), (item: QRCodeItem) => {
@@ -161,10 +149,9 @@ export struct ContentPage {
         })
       }
       .columnsTemplate('1fr 1fr')
-      .rowsTemplate('1fr 1fr 1fr')
       .columnsGap(12)
       .rowsGap(12)
-      .padding({ left: 16, right: 16, bottom: 80 })
+      .padding({ left: 16, right: 16, top: 16, bottom: 80 })
       .layoutWeight(1)
     }
     .width('100%')
